@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { DatabaseModule } from './common/database.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { APP_GUARD } from '@nestjs/core';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [
