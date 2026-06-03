@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './config/database/database.module';
+import { ModelsModule } from './modules/models/models.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DatabaseModule } from './config/database/database.module';
       envFilePath: '.env',
     }),
     DatabaseModule,
+    ModelsModule,
   ],
   controllers: [AppController],
   providers: [

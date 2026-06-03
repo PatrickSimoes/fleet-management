@@ -18,7 +18,7 @@ export abstract class BaseService<
     protected readonly entityName: string,
   ) {}
 
-  async create(dto: DeepPartial<T>, createdBy: string): Promise<T> {
+  async create(dto: DeepPartial<T>, createdBy?: string): Promise<T> {
     const entity = this.repository.create({
       ...dto,
       createdBy,
