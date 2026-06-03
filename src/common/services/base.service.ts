@@ -10,9 +10,7 @@ import { BaseEntity } from '../entities/base.entity';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
 import { PaginatedResult } from '../dto/paginated-result.interface';
 
-export abstract class BaseService<
-  T extends BaseEntity & { id: string | number },
-> {
+export abstract class BaseService<T extends BaseEntity> {
   protected constructor(
     protected readonly repository: Repository<T>,
     protected readonly entityName: string,

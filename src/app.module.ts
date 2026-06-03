@@ -6,6 +6,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './config/database/database.module';
 import { ModelsModule } from './modules/models/models.module';
+import { VehiclesModule } from './modules/vehicles/vehicles.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ModelsModule } from './modules/models/models.module';
     }),
     DatabaseModule,
     ModelsModule,
+    VehiclesModule,
   ],
   controllers: [AppController],
   providers: [
