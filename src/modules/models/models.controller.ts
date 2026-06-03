@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ModelsService } from './models.service';
 import { CreateModelDto } from './dto/create-model.dto';
 import { UpdateModelDto } from './dto/update-model.dto';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 
 @Controller('models')
 export class ModelsController {
@@ -21,8 +23,8 @@ export class ModelsController {
   }
 
   @Get()
-  findAll() {
-    return this.modelsService.findAll();
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.modelsService.paginate(query);
   }
 
   @Get(':id')
