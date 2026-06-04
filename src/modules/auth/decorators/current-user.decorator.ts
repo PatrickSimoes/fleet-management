@@ -4,7 +4,6 @@ import {
   JwtPayload,
 } from '../interface/jwt-payload.interface';
 
-/** Lógica de extração isolada para ser testável de forma unitária. */
 export const currentUserFactory = (
   _data: unknown,
   ctx: ExecutionContext,
@@ -13,5 +12,4 @@ export const currentUserFactory = (
   return request.user;
 };
 
-/** Extrai o usuário do token (request.user) preenchido pelo AuthGuard. */
 export const CurrentUser = createParamDecorator(currentUserFactory);
