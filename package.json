@@ -71,12 +71,22 @@
       "ts"
     ],
     "rootDir": "src",
+    "setupFiles": [
+      "reflect-metadata"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!**/*.module.ts",
+      "!**/*.interface.ts",
+      "!**/main.ts",
+      "!**/index.ts",
+      "!**/*.constants.ts",
+      "!**/testing/**",
+      "!**/entities/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
