@@ -60,7 +60,7 @@ export abstract class BaseService<T extends BaseEntity> {
   }
 
   async update(id: T['id'], dto: DeepPartial<T>): Promise<T> {
-    const entity = await this.findOne(id);
+    const entity = await this.loadEntity(id);
 
     Object.assign(entity, dto);
 
@@ -72,8 +72,20 @@ export abstract class BaseService<T extends BaseEntity> {
   }
 
   async remove(id: T['id']): Promise<void> {
-    const entity = await this.findOne(id);
+    const entity = await this.loadEntity(id);
     await this.repository.remove(entity);
+  }
+
+  protected async loadEntity(id: T['id']): Promise<T> {
+    const entity = await this.repository.findOneBy({
+      id,
+    } as FindOptionsWhere<T>);
+
+    if (!entity) {
+      throw new NotFoundException(`${this.entityName} #${id} não encontrado`);
+    }
+
+    return entity;
   }
 
   protected handleDbError(error: unknown): never {
