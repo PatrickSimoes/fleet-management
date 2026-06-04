@@ -12,14 +12,19 @@ import { ModelsService } from './models.service';
 import { CreateModelDto } from './dto/create-model.dto';
 import { UpdateModelDto } from './dto/update-model.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { JwtPayload } from '../auth/interface/jwt-payload.interface';
 
 @Controller('models')
 export class ModelsController {
   constructor(private readonly modelsService: ModelsService) {}
 
   @Post()
-  create(@Body() createModelDto: CreateModelDto) {
-    return this.modelsService.create(createModelDto);
+  create(
+    @Body() createModelDto: CreateModelDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.modelsService.create(createModelDto, user.sub);
   }
 
   @Get()

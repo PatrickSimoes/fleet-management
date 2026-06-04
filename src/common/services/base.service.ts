@@ -21,19 +21,6 @@ export abstract class BaseService<T extends BaseEntity> {
     protected readonly entityName: string,
   ) {}
 
-  async create(dto: DeepPartial<T>, createdBy?: string): Promise<T> {
-    const entity = this.repository.create({
-      ...dto,
-      createdBy,
-    } as DeepPartial<T>);
-
-    try {
-      return await this.repository.save(entity);
-    } catch (error) {
-      this.handleDbError(error);
-    }
-  }
-
   async findAll(options?: FindManyOptions<T>): Promise<T[]> {
     return this.repository.find(options);
   }
@@ -89,11 +76,6 @@ export abstract class BaseService<T extends BaseEntity> {
     await this.repository.remove(entity);
   }
 
-  /**
-   * Rede de segurança: traduz erros de constraint do SQL Server em exceções
-   * HTTP coerentes, evitando vazar um 500 cru com mensagem de SQL.
-   * A validação "amigável" (mensagem com o valor) deve ficar em cada service.
-   */
   protected handleDbError(error: unknown): never {
     if (error instanceof QueryFailedError) {
       const driverError = error.driverError as { number?: number } | undefined;

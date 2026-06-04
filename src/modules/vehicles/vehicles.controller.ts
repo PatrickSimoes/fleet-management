@@ -12,14 +12,19 @@ import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { JwtPayload } from '../auth/interface/jwt-payload.interface';
 
 @Controller('vehicles')
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
 
   @Post()
-  create(@Body() createVehicleDto: CreateVehicleDto) {
-    return this.vehiclesService.create(createVehicleDto);
+  create(
+    @Body() createVehicleDto: CreateVehicleDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.vehiclesService.create(createVehicleDto, user.sub);
   }
 
   @Get()

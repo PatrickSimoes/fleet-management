@@ -1,16 +1,16 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { Model } from '../../models/entities/model.entity';
 
 @Entity('vehicles')
 export class Vehicle extends BaseEntity {
-  @Column({ name: 'license_plate' })
+  @Column({ name: 'license_plate', unique: true })
   licensePlate!: string;
 
-  @Column({ name: 'chassis' })
+  @Column({ name: 'chassis', unique: true })
   chassis!: string;
 
-  @Column({ name: 'renavam' })
+  @Column({ name: 'renavam', unique: true })
   renavam!: string;
 
   @Column({ name: 'year' })
@@ -19,6 +19,7 @@ export class Vehicle extends BaseEntity {
   @Column({ name: 'color' })
   color!: string;
 
+  @Index()
   @Column({ name: 'model_id' })
   modelId!: string;
 

@@ -1,8 +1,16 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { Vehicle } from '../../vehicles/entities/vehicle.entity';
 import { Brand } from '../../brands/entities/brand.entity';
 
+@Index(['brandId', 'name'], { unique: true })
 @Entity('models')
 export class Model extends BaseEntity {
   @Column()

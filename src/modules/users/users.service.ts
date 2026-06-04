@@ -19,14 +19,20 @@ export class UsersService extends BaseService<User> {
       throw new ConflictException(`Usuário com email '${dto.email}' já existe`);
     }
 
-    const user = await super.create(
-      { ...dto, password: await bcrypt.hash(dto.password as string, 10) },
+    const entity = this.repository.create({
+      ...dto,
+      password: await bcrypt.hash(dto.password as string, 10),
       createdBy,
-    );
+    });
 
-    delete (user as Partial<User>).password;
-
-    return user;
+    try {
+      const user = await this.repository.save(entity);
+      // não devolve o hash na resposta do create
+      delete (user as Partial<User>).password;
+      return user;
+    } catch (error) {
+      this.handleDbError(error);
+    }
   }
 
   // password tem select:false, então precisa ser pedido explicitamente p/ o login
