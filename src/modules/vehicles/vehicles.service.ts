@@ -1,5 +1,6 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
@@ -11,6 +12,10 @@ import { BaseService } from '../../common/services/base.service';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { PaginatedResult } from '../../common/dto/paginated-result.interface';
 import { RedisService } from '../../config/redis/redis.service';
+import {
+  EventPatterns,
+  FLEET_SERVICE,
+} from '../../config/rabbitmq/rabbitmq.constants';
 import { Vehicle } from './entities/vehicle.entity';
 
 @Injectable()
@@ -25,6 +30,7 @@ export class VehiclesService extends BaseService<Vehicle> {
     repository: Repository<Vehicle>,
     private readonly redis: RedisService,
     config: ConfigService,
+    @Inject(FLEET_SERVICE) private readonly client: ClientProxy,
   ) {
     super(repository, 'Vehicle');
     this.cacheTtl = Number(config.get('REDIS_CACHE_TTL', 60));
@@ -84,6 +90,11 @@ export class VehiclesService extends BaseService<Vehicle> {
       const vehicle = this.repository.create({ ...dto, createdBy });
       const saved = await this.repository.save(vehicle);
       await this.invalidateListCache();
+      this.client.emit(EventPatterns.VEHICLE_CREATED, {
+        id: saved.id,
+        licensePlate: saved.licensePlate,
+        createdBy,
+      });
       return saved;
     } catch (error) {
       this.handleDbError(error);
@@ -93,12 +104,14 @@ export class VehiclesService extends BaseService<Vehicle> {
   async update(id: string, dto: DeepPartial<Vehicle>): Promise<Vehicle> {
     const vehicle = await super.update(id, dto);
     await this.invalidateCache(id);
+    this.client.emit(EventPatterns.VEHICLE_UPDATED, { id });
     return vehicle;
   }
 
   async remove(id: string): Promise<void> {
     await super.remove(id);
     await this.invalidateCache(id);
+    this.client.emit(EventPatterns.VEHICLE_DELETED, { id });
   }
 
   /** Invalida o item específico e todas as páginas de listagem. */

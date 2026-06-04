@@ -6,6 +6,10 @@ import { VehiclesService } from './vehicles.service';
 import { Vehicle } from './entities/vehicle.entity';
 import { RedisService } from '../../config/redis/redis.service';
 import {
+  EventPatterns,
+  FLEET_SERVICE,
+} from '../../config/rabbitmq/rabbitmq.constants';
+import {
   createMockRepository,
   MockRepository,
 } from '../../common/testing/mock-repository';
@@ -19,6 +23,7 @@ describe('VehiclesService', () => {
     del: jest.Mock;
     delByPattern: jest.Mock;
   };
+  let client: { emit: jest.Mock };
 
   const dto = {
     licensePlate: 'ABC1D23',
@@ -37,6 +42,7 @@ describe('VehiclesService', () => {
       del: jest.fn(),
       delByPattern: jest.fn(),
     };
+    client = { emit: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -44,6 +50,7 @@ describe('VehiclesService', () => {
         { provide: getRepositoryToken(Vehicle), useValue: repository },
         { provide: RedisService, useValue: redis },
         { provide: ConfigService, useValue: { get: jest.fn(() => 60) } },
+        { provide: FLEET_SERVICE, useValue: client },
       ],
     }).compile();
 
@@ -136,6 +143,11 @@ describe('VehiclesService', () => {
         createdBy: 'user-1',
       });
       expect(redis.delByPattern).toHaveBeenCalledWith('vehicles:list:*');
+      expect(client.emit).toHaveBeenCalledWith(EventPatterns.VEHICLE_CREATED, {
+        id: '1',
+        licensePlate: 'ABC1D23',
+        createdBy: 'user-1',
+      });
       expect(result).toMatchObject({ id: '1', licensePlate: 'ABC1D23' });
     });
 
@@ -191,6 +203,9 @@ describe('VehiclesService', () => {
 
       expect(redis.del).toHaveBeenCalledWith('vehicles:item:1');
       expect(redis.delByPattern).toHaveBeenCalledWith('vehicles:list:*');
+      expect(client.emit).toHaveBeenCalledWith(EventPatterns.VEHICLE_UPDATED, {
+        id: '1',
+      });
     });
 
     it('remove invalida o item e a listagem', async () => {
@@ -201,6 +216,9 @@ describe('VehiclesService', () => {
       expect(repository.remove).toHaveBeenCalled();
       expect(redis.del).toHaveBeenCalledWith('vehicles:item:1');
       expect(redis.delByPattern).toHaveBeenCalledWith('vehicles:list:*');
+      expect(client.emit).toHaveBeenCalledWith(EventPatterns.VEHICLE_DELETED, {
+        id: '1',
+      });
     });
   });
 });
