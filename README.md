@@ -44,6 +44,31 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Seed do banco de dados
+
+O seed cria o **usuário padrão `aivacol`** e popula o catálogo de
+marcas → modelos → veículos a partir do mock [`seed_vehicles.json`](./seed_vehicles.json)
+(na raiz do projeto). É **idempotente**: pode ser executado várias vezes sem
+duplicar registros.
+
+Pré-requisitos: `.env` configurado e a infraestrutura no ar
+(`docker compose up -d` sobe SQL Server, Redis e RabbitMQ).
+
+```bash
+$ npm run seed
+```
+
+> O seed depende apenas do **SQL Server** — ele cria o schema automaticamente
+> (TypeORM `synchronize` em ambiente não-produtivo) caso ainda não exista.
+
+**Credenciais padrão** (use no `POST /auth/login`):
+
+| Campo | Valor padrão | Variável de ambiente |
+|---|---|---|
+| email | `aivacol@aivacol.com.br` | `SEED_USER_EMAIL` |
+| senha | `aivacol` | `SEED_USER_PASSWORD` |
+| nickname | `aivacol` | — |
+
 ## Run tests
 
 ```bash

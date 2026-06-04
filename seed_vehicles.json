@@ -1,0 +1,92 @@
+[
+  {
+    "brand": "Volkswagen",
+    "model": "Gol",
+    "licensePlate": "ABC1D23",
+    "chassis": "9BWZZZ377VT004251",
+    "renavam": "12345678901",
+    "year": 2022,
+    "color": "Branco"
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Saveiro",
+    "licensePlate": "DEF2G45",
+    "chassis": "9BWAB45Z8MP100200",
+    "renavam": "23456789012",
+    "year": 2021,
+    "color": "Prata"
+  },
+  {
+    "brand": "Fiat",
+    "model": "Strada",
+    "licensePlate": "GHI3J67",
+    "chassis": "9BD27822KL3010515",
+    "renavam": "34567890123",
+    "year": 2023,
+    "color": "Vermelho"
+  },
+  {
+    "brand": "Fiat",
+    "model": "Toro",
+    "licensePlate": "JKL4M89",
+    "chassis": "9BD22647TM7020630",
+    "renavam": "45678901234",
+    "year": 2022,
+    "color": "Cinza"
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Onix",
+    "licensePlate": "MNO5P01",
+    "chassis": "9BGKS48U0NG040745",
+    "renavam": "56789012345",
+    "year": 2023,
+    "color": "Preto"
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "S10",
+    "licensePlate": "PQR6S23",
+    "chassis": "9BG138CN0KC050860",
+    "renavam": "67890123456",
+    "year": 2020,
+    "color": "Branco"
+  },
+  {
+    "brand": "Toyota",
+    "model": "Hilux",
+    "licensePlate": "STU7V45",
+    "chassis": "8AJDB3CD2K0060975",
+    "renavam": "78901234567",
+    "year": 2021,
+    "color": "Prata"
+  },
+  {
+    "brand": "Toyota",
+    "model": "Corolla",
+    "licensePlate": "VWX8Y67",
+    "chassis": "9BRBL3HE5M0071080",
+    "renavam": "89012345678",
+    "year": 2022,
+    "color": "Preto"
+  },
+  {
+    "brand": "Ford",
+    "model": "Ranger",
+    "licensePlate": "YZA9B89",
+    "chassis": "8AFAR23L4LJ081195",
+    "renavam": "90123456789",
+    "year": 2020,
+    "color": "Azul"
+  },
+  {
+    "brand": "Renault",
+    "model": "Master",
+    "licensePlate": "BCD0E12",
+    "chassis": "93YMAFEC5MJ091210",
+    "renavam": "01234567890",
+    "year": 2023,
+    "color": "Branco"
+  }
+]
