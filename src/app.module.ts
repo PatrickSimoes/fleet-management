@@ -7,6 +7,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './config/database/database.module';
 import { ModelsModule } from './modules/models/models.module';
 import { VehiclesModule } from './modules/vehicles/vehicles.module';
+import { BrandsModule } from './modules/brands/brands.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module';
     DatabaseModule,
     ModelsModule,
     VehiclesModule,
+    BrandsModule,
   ],
   controllers: [AppController],
   providers: [
