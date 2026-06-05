@@ -1,123 +1,217 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Plataforma de Gestão de Frota — Aivacol
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend do módulo de gestão de frota: cadastro de **veículos**, **modelos**, **marcas** e **usuários**, com autenticação JWT, cache em Redis, mensageria com RabbitMQ e schema versionado por migrations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologias
 
-## Description
+| Camada | Tecnologia |
+|---|---|
+| Runtime | Node.js 18+ |
+| Framework | NestJS 11 |
+| ORM | TypeORM |
+| Banco | SQL Server |
+| Cache | Redis |
+| Mensageria | RabbitMQ |
+| Autenticação | JWT |
+| Testes | Jest |
+| Infra local | Docker Compose |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Arquitetura
 
-## Project setup
+- **Módulos de domínio** (`vehicles`, `models`, `brands`, `users`, `auth`) seguindo arquitetura modular do NestJS, com um `BaseService` genérico para CRUD e paginação.
+- **Autenticação JWT** global: todas as rotas são protegidas por padrão; apenas o login é público (decorator `@Public`).
+- **Cache Redis** nas consultas de veículos (listagem e item), com TTL configurável e invalidação automática ao criar, atualizar ou remover.
+- **Mensageria RabbitMQ**: ao criar/atualizar/remover um veículo, um evento é publicado (`vehicle.created` / `vehicle.updated` / `vehicle.deleted`) e consumido de forma assíncrona, com ACK manual e _dead-letter queue_ para falhas.
+- **Migrations** como fonte da verdade do schema (`synchronize` desligado).
+- **Metadados** `created_at`, `updated_at` e `created_by` em todas as entidades.
+- Segurança adicional: `helmet`, CORS, _rate limiting_ (`@nestjs/throttler`) e validação de payload (`ValidationPipe` com `whitelist`).
 
-```bash
-$ npm install
-```
+## Pré-requisitos
 
-## Compile and run the project
+- [Node.js](https://nodejs.org) 18 ou superior
+- [Docker](https://www.docker.com) e Docker Compose
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## Como começar (passo a passo)
 
-# production mode
-$ npm run start:prod
-```
-
-## Seed do banco de dados
-
-O seed cria o **usuário padrão `aivacol`** e popula o catálogo de
-marcas → modelos → veículos a partir do mock [`seed_vehicles.json`](./seed_vehicles.json)
-(na raiz do projeto). É **idempotente**: pode ser executado várias vezes sem
-duplicar registros.
-
-Pré-requisitos: `.env` configurado e a infraestrutura no ar
-(`docker compose up -d` sobe SQL Server, Redis e RabbitMQ).
+### 1. Instalar as dependências
 
 ```bash
-$ npm run seed
+npm install
 ```
 
-> O seed depende apenas do **SQL Server** — ele cria o schema automaticamente
-> (TypeORM `synchronize` em ambiente não-produtivo) caso ainda não exista.
+### 2. Configurar as variáveis de ambiente
 
-**Credenciais padrão** (use no `POST /auth/login`):
+Copie o arquivo de exemplo e ajuste se necessário:
 
-| Campo | Valor padrão | Variável de ambiente |
+```bash
+cp .env.example .env
+```
+
+> Defina um valor para `JWT_SECRET`. Os demais valores já vêm prontos para rodar localmente.
+
+### 3. Subir a infraestrutura (SQL Server, Redis e RabbitMQ)
+
+```bash
+docker compose up -d
+```
+
+Isso sobe os contêineres e o serviço `sqlserver-init`, que **cria o banco `fleet_management` automaticamente** assim que o SQL Server fica saudável.
+
+### 4. Rodar as migrations (cria o schema)
+
+```bash
+npm run migration:run
+```
+
+### 5. Popular o banco com dados iniciais (seed)
+
+```bash
+npm run seed
+```
+
+Cria o usuário padrão **`aivacol`** e o catálogo de marcas → modelos → veículos a partir do mock [`seed_vehicles.json`](./seed_vehicles.json).
+
+### 6. Subir a API
+
+```bash
+npm run start:dev
+```
+
+A API sobe em `http://localhost:3000` (porta configurável via `PORT`).
+
+### 7. Autenticar e usar a API
+
+Faça login para obter o token:
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"aivacol@aivacol.com.br","password":"aivacol"}'
+```
+
+Use o token nas demais rotas:
+
+```bash
+curl http://localhost:3000/vehicles \
+  -H "Authorization: Bearer SEU_TOKEN"
+```
+
+---
+
+## Variáveis de ambiente
+
+| Grupo | Variável | Descrição |
 |---|---|---|
-| email | `aivacol@aivacol.com.br` | `SEED_USER_EMAIL` |
-| senha | `aivacol` | `SEED_USER_PASSWORD` |
-| nickname | `aivacol` | — |
+| App | `NODE_ENV` | Ambiente de execução |
+| App | `PORT` | Porta da API (padrão `3000`) |
+| Database | `DB_HOST` / `DB_PORT` | Host e porta do SQL Server |
+| Database | `DB_USER` / `DB_PASSWORD` | Credenciais do banco |
+| Database | `DB_NAME` | Nome do banco (`fleet_management`) |
+| JWT | `JWT_SECRET` | Segredo de assinatura do token |
+| JWT | `JWT_EXPIRES_IN` | Validade do token (ex.: `1d`) |
+| Redis | `REDIS_HOST` / `REDIS_PORT` / `REDIS_PASSWORD` | Conexão do Redis |
+| Redis | `REDIS_CACHE_TTL` | Tempo de vida do cache, em segundos |
+| RabbitMQ | `RABBITMQ_USER` / `RABBITMQ_PASSWORD` | Credenciais do RabbitMQ |
+| RabbitMQ | `RABBITMQ_URI` | URI de conexão AMQP |
+| Seed | `SEED_USER_EMAIL` / `SEED_USER_PASSWORD` | Credenciais do usuário criado no seed |
 
-## Run tests
+## Credenciais padrão do seed
+
+| Campo | Valor |
+|---|---|
+| email | `aivacol@aivacol.com.br` |
+| senha | `aivacol` |
+| nickname | `aivacol` |
+
+## Serviços (Docker)
+
+| Serviço | Porta | Observação |
+|---|---|---|
+| SQL Server | `1433` | Banco principal |
+| Redis | `6379` | Cache |
+| RabbitMQ | `5672` | Mensageria (AMQP) |
+| RabbitMQ (UI) | `15672` | Painel de gerenciamento (`fleet` / `fleet`) |
+
+---
+
+## Migrations
+
+O schema é versionado por migrations do TypeORM (`synchronize` desligado).
 
 ```bash
-# unit tests
-$ npm run test
+# aplicar as migrations pendentes
+npm run migration:run
 
-# e2e tests
-$ npm run test:e2e
+# reverter a última migration
+npm run migration:revert
 
-# test coverage
-$ npm run test:cov
+# ver o status das migrations
+npm run migration:show
+
+# gerar uma nova migration a partir de mudanças nas entidades
+npm run migration:generate -- src/config/database/migrations/<Nome>
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Testes
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# testes unitários
+npm run test
+
+# cobertura
+npm run test:cov
+
+# testes e2e
+npm run test:e2e
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Endpoints
 
-## Resources
+Todas as rotas (exceto o login) exigem o header `Authorization: Bearer <token>`.
 
-Check out a few resources that may come in handy when working with NestJS:
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/auth/login` | Autenticação (público) |
+| `GET` | `/vehicles` | Lista veículos (paginado: `?page=&limit=`) |
+| `GET` | `/vehicles/:id` | Detalha um veículo |
+| `POST` | `/vehicles` | Cria um veículo |
+| `PATCH` | `/vehicles/:id` | Atualiza um veículo |
+| `DELETE` | `/vehicles/:id` | Remove um veículo |
+| `GET/POST/PATCH/DELETE` | `/models` | CRUD de modelos |
+| `GET/POST/PATCH/DELETE` | `/brands` | CRUD de marcas |
+| `GET/POST/PATCH/DELETE` | `/users` | CRUD de usuários |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Estrutura do projeto
 
-## Support
+```
+src/
+├── app.module.ts
+├── main.ts
+├── common/                 # base service, entidade base, DTOs e utilitários compartilhados
+├── config/
+│   ├── database/           # módulo do TypeORM, data-source, seed e migrations
+│   ├── redis/              # módulo e serviço de cache
+│   └── rabbitmq/           # módulo de mensageria
+└── modules/
+    ├── auth/               # login, guard JWT e decorators
+    ├── users/
+    ├── brands/
+    ├── models/
+    └── vehicles/
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Scripts disponíveis
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Script | Descrição |
+|---|---|
+| `npm run start:dev` | Sobe a API em modo watch |
+| `npm run build` | Compila o projeto |
+| `npm run seed` | Popula o banco com dados iniciais |
+| `npm run migration:run` | Aplica as migrations |
+| `npm run migration:revert` | Reverte a última migration |
+| `npm run migration:generate -- <caminho>` | Gera uma nova migration |
+| `npm run schema:drop` | Remove todo o schema do banco |
+| `npm run test` | Executa os testes |
+| `npm run lint` | Roda o linter |

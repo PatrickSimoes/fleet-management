@@ -13,6 +13,12 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "seed": "ts-node -r tsconfig-paths/register src/config/database/seed.ts",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "npm run typeorm -- migration:generate -d src/config/database/data-source.ts",
+    "migration:run": "npm run typeorm -- migration:run -d src/config/database/data-source.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d src/config/database/data-source.ts",
+    "migration:show": "npm run typeorm -- migration:show -d src/config/database/data-source.ts",
+    "schema:drop": "npm run typeorm -- schema:drop -d src/config/database/data-source.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -53,6 +59,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.0",
     "@types/supertest": "^7.0.0",
+    "dotenv": "^17.4.2",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
@@ -91,7 +98,9 @@
       "!**/*.constants.ts",
       "!**/testing/**",
       "!**/entities/**",
-      "!**/database/seed.ts"
+      "!**/database/seed.ts",
+      "!**/data-source.ts",
+      "!**/migrations/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
