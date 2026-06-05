@@ -2,10 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { User } from '../modules/users/entities/user.entity';
-import { Brand } from '../modules/brands/entities/brand.entity';
-import { Model } from '../modules/models/entities/model.entity';
-import { Vehicle } from '../modules/vehicles/entities/vehicle.entity';
+import { User } from '../../modules/users/entities/user.entity';
+import { Brand } from '../../modules/brands/entities/brand.entity';
+import { Model } from '../../modules/models/entities/model.entity';
+import { Vehicle } from '../../modules/vehicles/entities/vehicle.entity';
 
 export interface SeedVehicle {
   brand: string;

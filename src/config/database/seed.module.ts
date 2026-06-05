@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseModule } from '../config/database/database.module';
-import { User } from '../modules/users/entities/user.entity';
-import { Brand } from '../modules/brands/entities/brand.entity';
-import { Model } from '../modules/models/entities/model.entity';
-import { Vehicle } from '../modules/vehicles/entities/vehicle.entity';
+import { DatabaseModule } from './database.module';
+import { User } from '../../modules/users/entities/user.entity';
+import { Brand } from '../../modules/brands/entities/brand.entity';
+import { Model } from '../../modules/models/entities/model.entity';
+import { Vehicle } from '../../modules/vehicles/entities/vehicle.entity';
 import { SeedService } from './seed.service';
 
 @Module({

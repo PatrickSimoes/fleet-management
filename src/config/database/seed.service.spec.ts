@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SeedService, SeedVehicle } from './seed.service';
-import { User } from '../modules/users/entities/user.entity';
-import { Brand } from '../modules/brands/entities/brand.entity';
-import { Model } from '../modules/models/entities/model.entity';
-import { Vehicle } from '../modules/vehicles/entities/vehicle.entity';
+import { User } from '../../modules/users/entities/user.entity';
+import { Brand } from '../../modules/brands/entities/brand.entity';
+import { Model } from '../../modules/models/entities/model.entity';
+import { Vehicle } from '../../modules/vehicles/entities/vehicle.entity';
 import {
   createMockRepository,
   MockRepository,
-} from '../common/testing/mock-repository';
+} from '../../common/testing/mock-repository';
 
 describe('SeedService', () => {
   let service: SeedService;
