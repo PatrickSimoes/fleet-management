@@ -25,7 +25,6 @@ describe('SeedService', () => {
       chassis: '9BWZZZ377VT004251',
       renavam: '12345678901',
       year: 2022,
-      color: 'Branco',
     },
     {
       brand: 'Volkswagen',
@@ -34,7 +33,6 @@ describe('SeedService', () => {
       chassis: '9BWAB45Z8MP100200',
       renavam: '23456789012',
       year: 2021,
-      color: 'Prata',
     },
   ];
 

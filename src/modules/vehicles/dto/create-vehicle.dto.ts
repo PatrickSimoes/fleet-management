@@ -17,10 +17,6 @@ export class CreateVehicleDto {
   @Min(1900)
   year!: number;
 
-  @IsString()
-  @IsNotEmpty()
-  color!: string;
-
   @IsUUID()
   modelId!: string;
 }

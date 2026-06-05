@@ -5,8 +5,7 @@
     "licensePlate": "ABC1D23",
     "chassis": "9BWZZZ377VT004251",
     "renavam": "12345678901",
-    "year": 2022,
-    "color": "Branco"
+    "year": 2022
   },
   {
     "brand": "Volkswagen",
@@ -14,8 +13,7 @@
     "licensePlate": "DEF2G45",
     "chassis": "9BWAB45Z8MP100200",
     "renavam": "23456789012",
-    "year": 2021,
-    "color": "Prata"
+    "year": 2021
   },
   {
     "brand": "Fiat",
@@ -23,8 +21,7 @@
     "licensePlate": "GHI3J67",
     "chassis": "9BD27822KL3010515",
     "renavam": "34567890123",
-    "year": 2023,
-    "color": "Vermelho"
+    "year": 2023
   },
   {
     "brand": "Fiat",
@@ -32,8 +29,7 @@
     "licensePlate": "JKL4M89",
     "chassis": "9BD22647TM7020630",
     "renavam": "45678901234",
-    "year": 2022,
-    "color": "Cinza"
+    "year": 2022
   },
   {
     "brand": "Chevrolet",
@@ -41,8 +37,7 @@
     "licensePlate": "MNO5P01",
     "chassis": "9BGKS48U0NG040745",
     "renavam": "56789012345",
-    "year": 2023,
-    "color": "Preto"
+    "year": 2023
   },
   {
     "brand": "Chevrolet",
@@ -50,8 +45,7 @@
     "licensePlate": "PQR6S23",
     "chassis": "9BG138CN0KC050860",
     "renavam": "67890123456",
-    "year": 2020,
-    "color": "Branco"
+    "year": 2020
   },
   {
     "brand": "Toyota",
@@ -59,8 +53,7 @@
     "licensePlate": "STU7V45",
     "chassis": "8AJDB3CD2K0060975",
     "renavam": "78901234567",
-    "year": 2021,
-    "color": "Prata"
+    "year": 2021
   },
   {
     "brand": "Toyota",
@@ -68,8 +61,7 @@
     "licensePlate": "VWX8Y67",
     "chassis": "9BRBL3HE5M0071080",
     "renavam": "89012345678",
-    "year": 2022,
-    "color": "Preto"
+    "year": 2022
   },
   {
     "brand": "Ford",
@@ -77,8 +69,7 @@
     "licensePlate": "YZA9B89",
     "chassis": "8AFAR23L4LJ081195",
     "renavam": "90123456789",
-    "year": 2020,
-    "color": "Azul"
+    "year": 2020
   },
   {
     "brand": "Renault",
@@ -86,7 +77,6 @@
     "licensePlate": "BCD0E12",
     "chassis": "93YMAFEC5MJ091210",
     "renavam": "01234567890",
-    "year": 2023,
-    "color": "Branco"
+    "year": 2023
   }
 ]

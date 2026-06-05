@@ -30,7 +30,6 @@ describe('VehiclesService', () => {
     chassis: '9BWZZZ377VT004251',
     renavam: '12345678901',
     year: 2022,
-    color: 'preto',
     modelId: 'model-1',
   };
 
@@ -199,7 +198,7 @@ describe('VehiclesService', () => {
         Promise.resolve(e),
       );
 
-      await service.update('1', { color: 'azul' });
+      await service.update('1', { year: 2023 });
 
       expect(redis.del).toHaveBeenCalledWith('vehicles:item:1');
       expect(redis.delByPattern).toHaveBeenCalledWith('vehicles:list:*');

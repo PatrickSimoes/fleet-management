@@ -19,7 +19,6 @@ describe('VehiclesController', () => {
     chassis: '9BWZZZ377VT004251',
     renavam: '12345678901',
     year: 2022,
-    color: 'preto',
     modelId: 'model-1',
   };
 
@@ -61,8 +60,8 @@ describe('VehiclesController', () => {
   });
 
   it('update repassa id e dto', async () => {
-    await controller.update('1', { color: 'azul' });
-    expect(service.update).toHaveBeenCalledWith('1', { color: 'azul' });
+    await controller.update('1', { year: 2023 });
+    expect(service.update).toHaveBeenCalledWith('1', { year: 2023 });
   });
 
   it('remove repassa o id', async () => {

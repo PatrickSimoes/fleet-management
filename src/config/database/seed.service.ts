@@ -14,7 +14,6 @@ export interface SeedVehicle {
   chassis: string;
   renavam: string;
   year: number;
-  color: string;
 }
 
 @Injectable()
@@ -109,7 +108,6 @@ export class SeedService {
         chassis: entry.chassis,
         renavam: entry.renavam,
         year: entry.year,
-        color: entry.color,
         modelId,
         createdBy,
       }),

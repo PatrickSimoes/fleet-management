@@ -16,9 +16,6 @@ export class Vehicle extends BaseEntity {
   @Column({ name: 'year' })
   year!: number;
 
-  @Column({ name: 'color' })
-  color!: string;
-
   @Index()
   @Column({ name: 'model_id' })
   modelId!: string;

@@ -7,7 +7,6 @@ const valid = {
   chassis: '9BWZZZ377VT004251',
   renavam: '12345678901',
   year: 2022,
-  color: 'preto',
   modelId: 'a3f1c2d4-5b6e-7f80-9a1b-2c3d4e5f6a7b',
 };
 
@@ -20,7 +19,7 @@ describe('CreateVehicleDto (validações)', () => {
     expect(errors).toHaveLength(0);
   });
 
-  it.each(['licensePlate', 'chassis', 'renavam', 'color'])(
+  it.each(['licensePlate', 'chassis', 'renavam'])(
     'rejeita quando o campo string "%s" está ausente',
     async (field) => {
       const payload: Record<string, unknown> = { ...valid };
