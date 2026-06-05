@@ -189,6 +189,18 @@ Todas as rotas (exceto o login) exigem o header `Authorization: Bearer <token>`.
 | `GET/POST/PATCH/DELETE` | `/brands` | CRUD de marcas |
 | `GET/POST/PATCH/DELETE` | `/users` | CRUD de usuários |
 
+## Documentação da API (Coleção Postman)
+
+A documentação interativa dos endpoints é fornecida através de uma coleção Postman, disponível na raiz do projeto: [`Fleet-Management.postman_collection.json`](./Fleet-Management.postman_collection.json).
+
+Para utilizá-la, importe o arquivo no Postman. A coleção já está pré-configurada com:
+
+- a variável `baseUrl` apontando para `http://localhost:3000`;
+- requisição de **login** que, ao ser executada, armazena automaticamente o token JWT na variável `{{token}}`, aplicando-o às demais rotas;
+- captura automática dos identificadores criados (`brandId`, `modelId`, `vehicleId`, `userId`), permitindo encadear as requisições sem preenchimento manual.
+
+> **Sobre a documentação Swagger/OpenAPI:** optou-se por não incluir o `@nestjs/swagger`, uma vez que a documentação interativa não constava entre os requisitos do teste. A decisão visa manter o número de dependências do projeto enxuto, sendo a coleção Postman suficiente para a exploração e validação completa da API. Caso necessário, a integração com o Swagger pode ser adicionada posteriormente sem impacto na arquitetura existente.
+
 ## Estrutura do projeto
 
 ```
