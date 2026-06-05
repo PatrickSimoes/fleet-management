@@ -24,7 +24,7 @@ Backend do módulo de gestão de frota: cadastro de **veículos**, **modelos**, 
 - **Mensageria RabbitMQ**: ao criar/atualizar/remover um veículo, um evento é publicado (`vehicle.created` / `vehicle.updated` / `vehicle.deleted`) e consumido de forma assíncrona, com ACK manual e _dead-letter queue_ para falhas.
 - **Migrations** como fonte da verdade do schema (`synchronize` desligado).
 - **Metadados** `created_at`, `updated_at` e `created_by` em todas as entidades.
-- Segurança adicional: `helmet`, CORS, _rate limiting_ (`@nestjs/throttler`) e validação de payload (`ValidationPipe` com `whitelist`).
+- Segurança adicional: `helmet`, CORS restrito a `localhost`, _rate limiting_ (`@nestjs/throttler`) e validação de payload (`ValidationPipe` com `whitelist`).
 
 ## Pré-requisitos
 
@@ -116,6 +116,12 @@ curl http://localhost:3000/vehicles \
 | RabbitMQ | `RABBITMQ_USER` / `RABBITMQ_PASSWORD` | Credenciais do RabbitMQ |
 | RabbitMQ | `RABBITMQ_URI` | URI de conexão AMQP |
 | Seed | `SEED_USER_EMAIL` / `SEED_USER_PASSWORD` | Credenciais do usuário criado no seed |
+
+## CORS
+
+O CORS é liberado apenas para a origem `http://localhost:<PORT>`, usando a mesma porta definida em `PORT` (padrão `3000`). São permitidos os métodos `GET`, `POST`, `PUT`, `PATCH`, `DELETE` e `OPTIONS`, os headers `Content-Type` e `Authorization`, e o envio de credenciais (`credentials: true`).
+
+Por enquanto a origem é fixa em `localhost`; para liberar outros domínios (ex.: front em produção), ajuste o `enableCors` em [`src/main.ts`](./src/main.ts).
 
 ## Credenciais padrão do seed
 
