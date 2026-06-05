@@ -10,22 +10,22 @@ const valid = {
 const validateDto = (payload: Record<string, unknown>) =>
   validate(plainToInstance(CreateModelDto, payload));
 
-describe('CreateModelDto (validações)', () => {
-  it('aceita um payload válido', async () => {
+describe('CreateModelDto (validation)', () => {
+  it('accepts a valid payload', async () => {
     expect(await validateDto(valid)).toHaveLength(0);
   });
 
-  it('rejeita name vazio', async () => {
+  it('rejects an empty name', async () => {
     const errors = await validateDto({ ...valid, name: '' });
     expect(errors.some((e) => e.property === 'name')).toBe(true);
   });
 
-  it('rejeita name acima de 255 caracteres', async () => {
+  it('rejects a name longer than 255 characters', async () => {
     const errors = await validateDto({ ...valid, name: 'a'.repeat(256) });
     expect(errors.some((e) => e.property === 'name')).toBe(true);
   });
 
-  it('rejeita brandId que não é UUID', async () => {
+  it('rejects a non-UUID brandId', async () => {
     const errors = await validateDto({ ...valid, brandId: '123' });
     expect(errors.some((e) => e.property === 'brandId')).toBe(true);
   });

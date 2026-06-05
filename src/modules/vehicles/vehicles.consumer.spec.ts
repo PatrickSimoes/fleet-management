@@ -17,7 +17,7 @@ describe('VehiclesConsumer', () => {
     channel = { ack: jest.fn(), nack: jest.fn() };
   });
 
-  it('faz ack ao processar vehicle.created com sucesso', async () => {
+  it('acks when vehicle.created is processed successfully', async () => {
     await consumer.handleVehicleCreated(
       { id: '1', licensePlate: 'ABC1D23' },
       buildContext(),
@@ -27,17 +27,17 @@ describe('VehiclesConsumer', () => {
     expect(channel.nack).not.toHaveBeenCalled();
   });
 
-  it('faz ack nos eventos de update e delete', async () => {
+  it('acks the update and delete events', async () => {
     await consumer.handleVehicleUpdated({ id: '1' }, buildContext());
     await consumer.handleVehicleDeleted({ id: '1' }, buildContext());
 
     expect(channel.ack).toHaveBeenCalledTimes(2);
   });
 
-  it('faz nack (sem requeue) quando o handler lança erro', async () => {
+  it('nacks (without requeue) when the handler throws', async () => {
     const logger = consumer['logger'];
     jest.spyOn(logger, 'log').mockImplementation(() => {
-      throw new Error('falha simulada');
+      throw new Error('simulated failure');
     });
 
     await consumer.handleVehicleCreated({ id: '1' }, buildContext());

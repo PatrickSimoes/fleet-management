@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 
-// bcrypt expõe propriedades não-configuráveis, então mockamos o módulo inteiro.
 jest.mock('bcrypt', () => ({ compare: jest.fn() }));
 const mockedCompare = bcrypt.compare as jest.Mock;
 import { UsersService } from '../users/users.service';
@@ -39,12 +38,12 @@ describe('AuthService', () => {
 
   afterEach(() => jest.restoreAllMocks());
 
-  it('deve estar definido', () => {
+  it('is defined', () => {
     expect(service).toBeDefined();
   });
 
   describe('signIn', () => {
-    it('retorna um access_token quando email e senha são válidos', async () => {
+    it('returns an access_token when email and password are valid', async () => {
       usersService.findByEmail.mockResolvedValue(user);
       mockedCompare.mockResolvedValue(true);
       jwtService.signAsync.mockResolvedValue('signed-jwt');
@@ -58,7 +57,7 @@ describe('AuthService', () => {
       expect(result).toEqual({ access_token: 'signed-jwt' });
     });
 
-    it('lança UnauthorizedException quando o usuário não existe', async () => {
+    it('throws UnauthorizedException when the user does not exist', async () => {
       usersService.findByEmail.mockResolvedValue(null);
 
       await expect(service.signIn('x@x.com', 'p')).rejects.toThrow(
@@ -67,13 +66,13 @@ describe('AuthService', () => {
       expect(jwtService.signAsync).not.toHaveBeenCalled();
     });
 
-    it('lança UnauthorizedException quando a senha está incorreta', async () => {
+    it('throws UnauthorizedException when the password is incorrect', async () => {
       usersService.findByEmail.mockResolvedValue(user);
       mockedCompare.mockResolvedValue(false);
 
-      await expect(
-        service.signIn('john@example.com', 'errada'),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(service.signIn('john@example.com', 'wrong')).rejects.toThrow(
+        UnauthorizedException,
+      );
       expect(jwtService.signAsync).not.toHaveBeenCalled();
     });
   });

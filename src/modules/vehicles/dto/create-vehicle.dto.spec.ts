@@ -13,14 +13,14 @@ const valid = {
 const validateDto = (payload: Record<string, unknown>) =>
   validate(plainToInstance(CreateVehicleDto, payload));
 
-describe('CreateVehicleDto (validações)', () => {
-  it('aceita um payload válido', async () => {
+describe('CreateVehicleDto (validation)', () => {
+  it('accepts a valid payload', async () => {
     const errors = await validateDto(valid);
     expect(errors).toHaveLength(0);
   });
 
   it.each(['licensePlate', 'chassis', 'renavam'])(
-    'rejeita quando o campo string "%s" está ausente',
+    'rejects when the string field "%s" is missing',
     async (field) => {
       const payload: Record<string, unknown> = { ...valid };
       delete payload[field];
@@ -29,17 +29,17 @@ describe('CreateVehicleDto (validações)', () => {
     },
   );
 
-  it('rejeita ano menor que 1900', async () => {
+  it('rejects a year lower than 1900', async () => {
     const errors = await validateDto({ ...valid, year: 1899 });
     expect(errors.some((e) => e.property === 'year')).toBe(true);
   });
 
-  it('rejeita ano não inteiro', async () => {
+  it('rejects a non-integer year', async () => {
     const errors = await validateDto({ ...valid, year: 'abc' });
     expect(errors.some((e) => e.property === 'year')).toBe(true);
   });
 
-  it('rejeita modelId que não é UUID', async () => {
+  it('rejects a non-UUID modelId', async () => {
     const errors = await validateDto({ ...valid, modelId: 'not-a-uuid' });
     expect(errors.some((e) => e.property === 'modelId')).toBe(true);
   });

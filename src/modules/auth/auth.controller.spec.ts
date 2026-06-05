@@ -17,11 +17,11 @@ describe('AuthController', () => {
     controller = module.get<AuthController>(AuthController);
   });
 
-  it('deve estar definido', () => {
+  it('is defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('signIn repassa email e senha para o AuthService e retorna o token', async () => {
+  it('signIn forwards email and password to AuthService and returns the token', async () => {
     service.signIn.mockResolvedValue({ access_token: 'jwt' });
 
     const result = await controller.signIn({

@@ -56,14 +56,14 @@ describe('VehiclesService', () => {
     service = module.get<VehiclesService>(VehiclesService);
   });
 
-  it('deve estar definido', () => {
+  it('is defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('paginate (cache de listagem)', () => {
+  describe('paginate (list cache)', () => {
     const query = { page: 1, limit: 10 };
 
-    it('retorna do cache sem tocar no banco quando há hit', async () => {
+    it('returns from cache without touching the database on a hit', async () => {
       const cached = { data: [], meta: {} };
       redis.get.mockResolvedValue(cached);
 
@@ -74,7 +74,7 @@ describe('VehiclesService', () => {
       expect(redis.set).not.toHaveBeenCalled();
     });
 
-    it('no cache miss consulta o banco e popula o cache com TTL', async () => {
+    it('on a cache miss queries the database and populates the cache with TTL', async () => {
       redis.get.mockResolvedValue(null);
       repository.findAndCount!.mockResolvedValue([[{ id: '1' }], 1]);
 
@@ -88,7 +88,7 @@ describe('VehiclesService', () => {
       );
     });
 
-    it('ignora o cache quando opções de busca são passadas', async () => {
+    it('bypasses the cache when find options are passed', async () => {
       repository.findAndCount!.mockResolvedValue([[], 0]);
 
       await service.paginate(query, { where: {} });
@@ -98,8 +98,8 @@ describe('VehiclesService', () => {
     });
   });
 
-  describe('findOne (cache de item)', () => {
-    it('retorna do cache quando há hit', async () => {
+  describe('findOne (item cache)', () => {
+    it('returns from cache on a hit', async () => {
       const cached = { id: '1' } as Vehicle;
       redis.get.mockResolvedValue(cached);
 
@@ -109,7 +109,7 @@ describe('VehiclesService', () => {
       expect(repository.findOne).not.toHaveBeenCalled();
     });
 
-    it('no cache miss busca no banco e armazena no cache', async () => {
+    it('on a cache miss queries the database and stores it in the cache', async () => {
       redis.get.mockResolvedValue(null);
       repository.findOne!.mockResolvedValue({ id: '1' });
 
@@ -118,7 +118,7 @@ describe('VehiclesService', () => {
       expect(redis.set).toHaveBeenCalledWith('vehicles:item:1', result, 60);
     });
 
-    it('ignora o cache quando opções são passadas', async () => {
+    it('bypasses the cache when options are passed', async () => {
       repository.findOne!.mockResolvedValue({ id: '1' });
 
       await service.findOne('1', { relations: { model: true } });
@@ -127,8 +127,8 @@ describe('VehiclesService', () => {
     });
   });
 
-  describe('create (validação de campos únicos)', () => {
-    it('cria o veículo e invalida o cache de listagem quando não há conflitos', async () => {
+  describe('create (unique field validation)', () => {
+    it('creates the vehicle and invalidates the list cache when there are no conflicts', async () => {
       repository.existsBy!.mockResolvedValue(false);
       repository.create!.mockImplementation((d: Partial<Vehicle>) => d);
       repository.save!.mockImplementation((e: Partial<Vehicle>) =>
@@ -150,8 +150,8 @@ describe('VehiclesService', () => {
       expect(result).toMatchObject({ id: '1', licensePlate: 'ABC1D23' });
     });
 
-    it('agrega todos os conflitos (placa, chassi e renavam) na exceção', async () => {
-      repository.existsBy!.mockResolvedValue(true); // tudo duplicado
+    it('aggregates all conflicts (plate, chassis and renavam) in the exception', async () => {
+      repository.existsBy!.mockResolvedValue(true);
 
       await expect(service.create(dto)).rejects.toThrow(ConflictException);
 
@@ -172,7 +172,7 @@ describe('VehiclesService', () => {
       expect(repository.save).not.toHaveBeenCalled();
     });
 
-    it('reporta apenas o campo realmente duplicado', async () => {
+    it('reports only the field that is actually duplicated', async () => {
       repository.existsBy!.mockImplementation(
         (where: { licensePlate?: string }) =>
           Promise.resolve(Boolean(where.licensePlate)),
@@ -180,7 +180,7 @@ describe('VehiclesService', () => {
 
       try {
         await service.create(dto);
-        fail('deveria ter lançado ConflictException');
+        fail('should have thrown ConflictException');
       } catch (err) {
         const response = (err as ConflictException).getResponse() as {
           conflicts: string[];
@@ -191,8 +191,8 @@ describe('VehiclesService', () => {
     });
   });
 
-  describe('update / remove (invalidação de cache)', () => {
-    it('update invalida o item e a listagem', async () => {
+  describe('update / remove (cache invalidation)', () => {
+    it('update invalidates the item and the list', async () => {
       repository.findOneBy!.mockResolvedValue({ id: '1' });
       repository.save!.mockImplementation((e: Partial<Vehicle>) =>
         Promise.resolve(e),
@@ -207,7 +207,7 @@ describe('VehiclesService', () => {
       });
     });
 
-    it('remove invalida o item e a listagem', async () => {
+    it('remove invalidates the item and the list', async () => {
       repository.findOneBy!.mockResolvedValue({ id: '1' });
 
       await service.remove('1');

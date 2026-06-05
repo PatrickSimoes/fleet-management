@@ -9,7 +9,6 @@ describe('AuthGuard', () => {
   let jwtService: { verifyAsync: jest.Mock };
   let reflector: { getAllAndOverride: jest.Mock };
 
-  // Monta um ExecutionContext fake com o header authorization informado.
   const buildContext = (authorization?: string) => {
     const request: { headers: Record<string, string>; user?: unknown } = {
       headers: authorization ? { authorization } : {},
@@ -33,7 +32,7 @@ describe('AuthGuard', () => {
     );
   });
 
-  it('libera rotas públicas sem exigir token', async () => {
+  it('allows public routes without requiring a token', async () => {
     reflector.getAllAndOverride.mockReturnValue(true);
     const { ctx } = buildContext();
 
@@ -45,21 +44,21 @@ describe('AuthGuard', () => {
     expect(jwtService.verifyAsync).not.toHaveBeenCalled();
   });
 
-  it('lança UnauthorizedException quando não há token', async () => {
+  it('throws UnauthorizedException when there is no token', async () => {
     reflector.getAllAndOverride.mockReturnValue(false);
     const { ctx } = buildContext();
 
     await expect(guard.canActivate(ctx)).rejects.toThrow(UnauthorizedException);
   });
 
-  it('lança UnauthorizedException quando o esquema não é Bearer', async () => {
+  it('throws UnauthorizedException when the scheme is not Bearer', async () => {
     reflector.getAllAndOverride.mockReturnValue(false);
     const { ctx } = buildContext('Basic abc123');
 
     await expect(guard.canActivate(ctx)).rejects.toThrow(UnauthorizedException);
   });
 
-  it('lança UnauthorizedException quando o token é inválido', async () => {
+  it('throws UnauthorizedException when the token is invalid', async () => {
     reflector.getAllAndOverride.mockReturnValue(false);
     jwtService.verifyAsync.mockRejectedValue(new Error('invalid'));
     const { ctx } = buildContext('Bearer bad-token');
@@ -67,7 +66,7 @@ describe('AuthGuard', () => {
     await expect(guard.canActivate(ctx)).rejects.toThrow(UnauthorizedException);
   });
 
-  it('aceita token válido e injeta o payload em request.user', async () => {
+  it('accepts a valid token and injects the payload into request.user', async () => {
     reflector.getAllAndOverride.mockReturnValue(false);
     const payload = { sub: 'user-1', username: 'John' };
     jwtService.verifyAsync.mockResolvedValue(payload);

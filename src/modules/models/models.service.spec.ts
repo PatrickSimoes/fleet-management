@@ -25,14 +25,14 @@ describe('ModelsService', () => {
     service = module.get<ModelsService>(ModelsService);
   });
 
-  it('deve estar definido', () => {
+  it('is defined', () => {
     expect(service).toBeDefined();
   });
 
   describe('create', () => {
     const dto = { name: 'Corolla', brandId: 'brand-1' };
 
-    it('cria o modelo quando o par (marca, nome) é único', async () => {
+    it('creates the model when the (brand, name) pair is unique', async () => {
       repository.existsBy!.mockResolvedValue(false);
       repository.create!.mockImplementation((d: Partial<Model>) => d);
       repository.save!.mockImplementation((e: Partial<Model>) =>
@@ -41,7 +41,6 @@ describe('ModelsService', () => {
 
       const result = await service.create(dto, 'user-1');
 
-      // A unicidade é por marca + nome, não só por nome.
       expect(repository.existsBy).toHaveBeenCalledWith({
         name: 'Corolla',
         brandId: 'brand-1',
@@ -53,7 +52,7 @@ describe('ModelsService', () => {
       expect(result).toMatchObject({ id: '1', ...dto });
     });
 
-    it('lança ConflictException quando já existe o modelo na mesma marca', async () => {
+    it('throws ConflictException when the model already exists in the same brand', async () => {
       repository.existsBy!.mockResolvedValue(true);
 
       await expect(service.create(dto)).rejects.toThrow(ConflictException);
@@ -63,13 +62,13 @@ describe('ModelsService', () => {
       expect(repository.save).not.toHaveBeenCalled();
     });
 
-    it('não checa duplicidade se faltar name ou brandId', async () => {
+    it('does not check duplication when name or brandId is missing', async () => {
       repository.create!.mockImplementation((d: Partial<Model>) => d);
       repository.save!.mockImplementation((e: Partial<Model>) =>
         Promise.resolve(e),
       );
 
-      await service.create({ name: 'Corolla' }); // sem brandId
+      await service.create({ name: 'Corolla' });
 
       expect(repository.existsBy).not.toHaveBeenCalled();
     });

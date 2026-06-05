@@ -11,7 +11,6 @@ import {
   MockRepository,
 } from '../testing/mock-repository';
 
-// Entidade e serviço concretos só para exercitar a classe abstrata.
 class TestEntity extends BaseEntity {
   name!: string;
 }
@@ -22,7 +21,6 @@ class TestService extends BaseService<TestEntity> {
   }
 }
 
-/** Helper para montar um QueryFailedError com o `number` do driver mssql. */
 const dbError = (number?: number): QueryFailedError =>
   new QueryFailedError('query', [], { number } as unknown as Error);
 
@@ -36,7 +34,7 @@ describe('BaseService', () => {
   });
 
   describe('findAll', () => {
-    it('repassa as opções para repository.find e retorna o resultado', async () => {
+    it('forwards the options to repository.find and returns the result', async () => {
       const rows = [{ id: '1' }] as TestEntity[];
       repository.find!.mockResolvedValue(rows);
 
@@ -50,7 +48,7 @@ describe('BaseService', () => {
   });
 
   describe('paginate', () => {
-    it('calcula skip/take e os metadados de paginação', async () => {
+    it('computes skip/take and the pagination metadata', async () => {
       repository.findAndCount!.mockResolvedValue([[{ id: '1' }], 25]);
 
       const result = await service.paginate({ page: 2, limit: 10 });
@@ -67,7 +65,7 @@ describe('BaseService', () => {
       });
     });
 
-    it('aplica os defaults (page=1, limit=1000) quando não informados', async () => {
+    it('applies the defaults (page=1, limit=1000) when not provided', async () => {
       repository.findAndCount!.mockResolvedValue([[], 0]);
 
       await service.paginate({} as never);
@@ -80,7 +78,7 @@ describe('BaseService', () => {
   });
 
   describe('findOne', () => {
-    it('retorna a entidade quando encontrada', async () => {
+    it('returns the entity when found', async () => {
       const entity = { id: '1' } as TestEntity;
       repository.findOne!.mockResolvedValue(entity);
 
@@ -88,7 +86,7 @@ describe('BaseService', () => {
       expect(repository.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
     });
 
-    it('lança NotFoundException quando não encontrada', async () => {
+    it('throws NotFoundException when not found', async () => {
       repository.findOne!.mockResolvedValue(null);
 
       await expect(service.findOne('99')).rejects.toThrow(NotFoundException);
@@ -99,7 +97,7 @@ describe('BaseService', () => {
   });
 
   describe('update', () => {
-    it('carrega, aplica o dto e salva a entidade', async () => {
+    it('loads, applies the dto and saves the entity', async () => {
       const entity = { id: '1', name: 'old' } as TestEntity;
       repository.findOneBy!.mockResolvedValue(entity);
       repository.save!.mockImplementation((e) => Promise.resolve(e));
@@ -111,7 +109,7 @@ describe('BaseService', () => {
       expect(result.name).toBe('new');
     });
 
-    it('lança NotFoundException quando a entidade não existe', async () => {
+    it('throws NotFoundException when the entity does not exist', async () => {
       repository.findOneBy!.mockResolvedValue(null);
 
       await expect(service.update('1', { name: 'x' })).rejects.toThrow(
@@ -122,7 +120,7 @@ describe('BaseService', () => {
   });
 
   describe('remove', () => {
-    it('carrega e remove a entidade', async () => {
+    it('loads and removes the entity', async () => {
       const entity = { id: '1' } as TestEntity;
       repository.findOneBy!.mockResolvedValue(entity);
 
@@ -131,7 +129,7 @@ describe('BaseService', () => {
       expect(repository.remove).toHaveBeenCalledWith(entity);
     });
 
-    it('lança NotFoundException quando a entidade não existe', async () => {
+    it('throws NotFoundException when the entity does not exist', async () => {
       repository.findOneBy!.mockResolvedValue(null);
 
       await expect(service.remove('1')).rejects.toThrow(NotFoundException);
@@ -139,13 +137,13 @@ describe('BaseService', () => {
     });
   });
 
-  describe('handleDbError (tradução de erros do banco)', () => {
+  describe('handleDbError (database error translation)', () => {
     beforeEach(() => {
       repository.findOneBy!.mockResolvedValue({ id: '1' });
     });
 
     it.each([2627, 2601])(
-      'converte violação de chave única (%i) em ConflictException',
+      'maps a unique key violation (%i) to ConflictException',
       async (number) => {
         repository.save!.mockRejectedValue(dbError(number));
 
@@ -155,7 +153,7 @@ describe('BaseService', () => {
       },
     );
 
-    it('converte violação de FK (547) em BadRequestException', async () => {
+    it('maps a FK violation (547) to BadRequestException', async () => {
       repository.save!.mockRejectedValue(dbError(547));
 
       await expect(service.update('1', {})).rejects.toThrow(
@@ -163,7 +161,7 @@ describe('BaseService', () => {
       );
     });
 
-    it('converte NULL em coluna obrigatória (515) em BadRequestException', async () => {
+    it('maps a NULL into a required column (515) to BadRequestException', async () => {
       repository.save!.mockRejectedValue(dbError(515));
 
       await expect(service.update('1', {})).rejects.toThrow(
@@ -171,15 +169,15 @@ describe('BaseService', () => {
       );
     });
 
-    it('repassa QueryFailedError com número desconhecido', async () => {
+    it('rethrows a QueryFailedError with an unknown number', async () => {
       const error = dbError(9999);
       repository.save!.mockRejectedValue(error);
 
       await expect(service.update('1', {})).rejects.toBe(error);
     });
 
-    it('repassa erros que não são QueryFailedError', async () => {
-      const error = new Error('erro genérico');
+    it('rethrows errors that are not QueryFailedError', async () => {
+      const error = new Error('generic error');
       repository.save!.mockRejectedValue(error);
 
       await expect(service.update('1', {})).rejects.toBe(error);

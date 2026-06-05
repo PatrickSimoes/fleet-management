@@ -26,12 +26,12 @@ describe('BrandsService', () => {
     service = module.get<BrandsService>(BrandsService);
   });
 
-  it('deve estar definido', () => {
+  it('is defined', () => {
     expect(service).toBeDefined();
   });
 
   describe('create', () => {
-    it('cria a marca quando o nome ainda não existe', async () => {
+    it('creates the brand when the name does not exist yet', async () => {
       repository.existsBy!.mockResolvedValue(false);
       repository.create!.mockImplementation((d: Partial<Brand>) => d);
       repository.save!.mockImplementation((e: Partial<Brand>) =>
@@ -48,7 +48,7 @@ describe('BrandsService', () => {
       expect(result).toEqual({ id: '1', name: 'Toyota', createdBy: 'user-1' });
     });
 
-    it('lança ConflictException quando o nome já existe (regra de negócio)', async () => {
+    it('throws ConflictException when the name already exists (business rule)', async () => {
       repository.existsBy!.mockResolvedValue(true);
 
       await expect(service.create({ name: 'Toyota' })).rejects.toThrow(
@@ -60,7 +60,7 @@ describe('BrandsService', () => {
       expect(repository.save).not.toHaveBeenCalled();
     });
 
-    it('não checa duplicidade quando o nome não é informado', async () => {
+    it('does not check duplication when the name is not provided', async () => {
       repository.create!.mockImplementation((d: Partial<Brand>) => d);
       repository.save!.mockImplementation((e: Partial<Brand>) =>
         Promise.resolve(e),
@@ -71,7 +71,7 @@ describe('BrandsService', () => {
       expect(repository.existsBy).not.toHaveBeenCalled();
     });
 
-    it('traduz erro de chave única do banco em ConflictException', async () => {
+    it('translates a database unique key error into ConflictException', async () => {
       repository.existsBy!.mockResolvedValue(false);
       repository.create!.mockImplementation((d: Partial<Brand>) => d);
       repository.save!.mockRejectedValue(
@@ -84,7 +84,7 @@ describe('BrandsService', () => {
     });
   });
 
-  it('expõe os métodos herdados de BaseService', () => {
+  it('exposes the methods inherited from BaseService', () => {
     expect(typeof service.findAll).toBe('function');
     expect(typeof service.paginate).toBe('function');
     expect(typeof service.findOne).toBe('function');

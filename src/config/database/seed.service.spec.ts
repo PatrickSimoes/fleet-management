@@ -62,11 +62,11 @@ describe('SeedService', () => {
     service = module.get<SeedService>(SeedService);
   });
 
-  it('deve estar definido', () => {
+  it('is defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('numa base vazia', () => {
+  describe('on an empty database', () => {
     beforeEach(() => {
       users.findOne!.mockResolvedValue(null);
       brands.findOneBy!.mockResolvedValue(null);
@@ -74,7 +74,7 @@ describe('SeedService', () => {
       vehicles.existsBy!.mockResolvedValue(false);
     });
 
-    it('cria o usuário aivacol com a senha hasheada', async () => {
+    it('creates the aivacol user with a hashed password', async () => {
       await service.run(seed);
 
       expect(users.create).toHaveBeenCalledWith(
@@ -86,7 +86,7 @@ describe('SeedService', () => {
       expect(createArg.password).toMatch(/^\$2[aby]\$/);
     });
 
-    it('cria a marca uma única vez mesmo com dois modelos da mesma marca', async () => {
+    it('creates the brand only once even with two models of the same brand', async () => {
       const persisted: Record<string, Brand> = {};
       brands.findOneBy!.mockImplementation((where: { name: string }) =>
         Promise.resolve(persisted[where.name] ?? null),
@@ -104,7 +104,7 @@ describe('SeedService', () => {
       expect(vehicles.save).toHaveBeenCalledTimes(2);
     });
 
-    it('associa o veículo ao modelo e ao usuário (created_by)', async () => {
+    it('links the vehicle to the model and the user (created_by)', async () => {
       brands.save!.mockResolvedValue({ id: 'brand-1' });
       models.save!.mockResolvedValue({ id: 'model-1' });
       users.save!.mockResolvedValue({ id: 'user-1', nickname: 'aivacol' });
@@ -121,8 +121,8 @@ describe('SeedService', () => {
     });
   });
 
-  describe('idempotência (base já populada)', () => {
-    it('não recria usuário, marcas, modelos nem veículos existentes', async () => {
+  describe('idempotency (already populated database)', () => {
+    it('does not recreate an existing user, brands, models or vehicles', async () => {
       users.findOne!.mockResolvedValue({ id: 'user-1', nickname: 'aivacol' });
       brands.findOneBy!.mockResolvedValue({ id: 'brand-1' });
       models.findOneBy!.mockResolvedValue({ id: 'model-1' });

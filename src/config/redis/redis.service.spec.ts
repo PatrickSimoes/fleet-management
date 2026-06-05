@@ -23,14 +23,14 @@ describe('RedisService', () => {
   });
 
   describe('get', () => {
-    it('desserializa o JSON quando há valor', async () => {
+    it('deserializes the JSON when a value exists', async () => {
       client.get.mockResolvedValue(JSON.stringify({ a: 1 }));
 
       await expect(service.get('k')).resolves.toEqual({ a: 1 });
       expect(client.get).toHaveBeenCalledWith('k');
     });
 
-    it('retorna null quando a chave não existe', async () => {
+    it('returns null when the key does not exist', async () => {
       client.get.mockResolvedValue(null);
 
       await expect(service.get('k')).resolves.toBeNull();
@@ -38,7 +38,7 @@ describe('RedisService', () => {
   });
 
   describe('set', () => {
-    it('serializa e aplica TTL com EX quando informado', async () => {
+    it('serializes and applies TTL with EX when provided', async () => {
       await service.set('k', { a: 1 }, 60);
 
       expect(client.set).toHaveBeenCalledWith(
@@ -49,7 +49,7 @@ describe('RedisService', () => {
       );
     });
 
-    it('persiste sem expiração quando o TTL é ausente ou zero', async () => {
+    it('persists without expiration when the TTL is missing or zero', async () => {
       await service.set('k', { a: 1 });
       expect(client.set).toHaveBeenCalledWith('k', JSON.stringify({ a: 1 }));
 
@@ -62,19 +62,18 @@ describe('RedisService', () => {
   });
 
   describe('del', () => {
-    it('remove as chaves informadas', async () => {
+    it('removes the provided keys', async () => {
       await service.del('a', 'b');
       expect(client.del).toHaveBeenCalledWith('a', 'b');
     });
 
-    it('não chama o client quando não há chaves', async () => {
+    it('does not call the client when there are no keys', async () => {
       await service.del();
       expect(client.del).not.toHaveBeenCalled();
     });
   });
 
   describe('delByPattern', () => {
-    // Simula o scanStream do ioredis como um async iterable de lotes de chaves.
     const streamOf = (batches: string[][]) =>
       (async function* () {
         for (const batch of batches) {
@@ -83,7 +82,7 @@ describe('RedisService', () => {
         }
       })();
 
-    it('varre o padrão e remove todas as chaves encontradas', async () => {
+    it('scans the pattern and removes every matched key', async () => {
       client.scanStream.mockReturnValue(streamOf([['k1', 'k2'], ['k3']]));
 
       await service.delByPattern('prefix:*');
@@ -95,7 +94,7 @@ describe('RedisService', () => {
       expect(client.del).toHaveBeenCalledWith('k1', 'k2', 'k3');
     });
 
-    it('não chama del quando nenhuma chave casa o padrão', async () => {
+    it('does not call del when no key matches the pattern', async () => {
       client.scanStream.mockReturnValue(streamOf([[]]));
 
       await service.delByPattern('prefix:*');
@@ -105,7 +104,7 @@ describe('RedisService', () => {
   });
 
   describe('onModuleDestroy', () => {
-    it('encerra a conexão com o Redis', () => {
+    it('closes the Redis connection', () => {
       service.onModuleDestroy();
       expect(client.quit).toHaveBeenCalled();
     });

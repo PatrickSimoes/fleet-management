@@ -28,11 +28,11 @@ describe('UsersController', () => {
     controller = module.get<UsersController>(UsersController);
   });
 
-  it('deve estar definido', () => {
+  it('is defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('create repassa o dto e o id do usuário autenticado como createdBy', async () => {
+  it('create forwards the dto and the authenticated user id as createdBy', async () => {
     const dto = {
       nickname: 'jdoe',
       name: 'John Doe',
@@ -43,23 +43,23 @@ describe('UsersController', () => {
     expect(service.create).toHaveBeenCalledWith(dto, 'user-1');
   });
 
-  it('findAll repassa a query de paginação', async () => {
+  it('findAll forwards the pagination query', async () => {
     const query = { page: 1, limit: 10 };
     await controller.findAll(query);
     expect(service.paginate).toHaveBeenCalledWith(query);
   });
 
-  it('findOne repassa o id', async () => {
+  it('findOne forwards the id', async () => {
     await controller.findOne('1');
     expect(service.findOne).toHaveBeenCalledWith('1');
   });
 
-  it('update repassa id e dto', async () => {
+  it('update forwards the id and dto', async () => {
     await controller.update('1', { name: 'Jane' });
     expect(service.update).toHaveBeenCalledWith('1', { name: 'Jane' });
   });
 
-  it('remove repassa o id', async () => {
+  it('remove forwards the id', async () => {
     await controller.remove('1');
     expect(service.remove).toHaveBeenCalledWith('1');
   });

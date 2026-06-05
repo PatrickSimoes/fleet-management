@@ -8,13 +8,13 @@ const contextWith = (user?: JwtPayload): ExecutionContext =>
   }) as unknown as ExecutionContext;
 
 describe('currentUserFactory (CurrentUser)', () => {
-  it('retorna o usuário presente em request.user', () => {
+  it('returns the user present in request.user', () => {
     const user: JwtPayload = { sub: 'user-1', username: 'John' };
 
     expect(currentUserFactory(undefined, contextWith(user))).toEqual(user);
   });
 
-  it('retorna undefined quando não há usuário no request', () => {
+  it('returns undefined when there is no user in the request', () => {
     expect(currentUserFactory(undefined, contextWith())).toBeUndefined();
   });
 });
